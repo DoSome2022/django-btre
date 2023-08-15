@@ -7,7 +7,9 @@
 
 ---  
 
+part2 - 181
 
+---
 
 ### 建立一個virtual environment  
 
@@ -175,3 +177,46 @@ GitHub.sublime-settings
 !.vscode/extensions.json 
 .history
 ```
+
+---
+
+###  part2
+
+耍做的事：
+- 建立一個名叫pages app  
+- 連結pages app
+
+---
+
+#### 建立一個名叫pages app  
+
+1. 在終端機
+ ```
+ python manage.py startapp pages
+ ```
+
+#### 連結pages app
+
+1. btre/settings.py  
+在INSTALLED_APPS裹加入pages  
+```
+...
+
+# Application definition
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'pages' // 加入pages app
+]
+
+
+...
+```
+
+---
+
