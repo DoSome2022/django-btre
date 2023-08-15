@@ -3,6 +3,8 @@
 part2 - 181  
 part3 - 223  
 part4 - 272  
+part5 - 377  
+
 
 
 ---  
@@ -372,3 +374,192 @@ def about(request): //增加了
 {% endblock %}
 ```  
 ----
+## part5 - 377  
+要做的事:
+- 加入static
+---
+#### 加入static  
+1. 在project btre 裹開static文件夾,而static裹加入css , img js webfonts 等文件夾 （來源在dist 內assets）
+
+```
+.
+├── btre
+│   ├── __pycache__
+│   ├── settings.py
+│   ├── static
+│   │   ├── css
+│   │   ├── img
+│   │   ├── js
+│   │   └── webfonts
+│   ├── urls.py
+│   └── wsgi.py
+├── db.sqlite3
+├── manage.py
+├── pages
+└── templates
+    ├── base.html
+    └── pages
+        ├── about.html
+        └── index.html
+
+```
+2. 在btre/settings.py
+```
+
+...
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/3.2/howto/static-files/
+
+
+STATIC_ROOT = os.path.join(BASE_DIR,'static') //增加這個
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [   //增加
+    os.path.join(BASE_DIR,'btre/static') //增加
+]  //增加
+
+# Default primary key field type
+# https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+```
+
+3. 在終端機  
+```
+python manage.py collectstatic
+```
+
+在全局位置多了1個名叫static的文件夾,而內有admin ,css ,img , js ,webfonts 才是成功  
+```
+.
+├── btre
+├── db.sqlite3
+├── manage.py
+├── pages
+├── static
+│   ├── admin
+│   │   ├── css
+│   │   ├── fonts
+│   │   ├── img
+│   │   └── js
+│   ├── css
+│   ├── img
+│   ├── js
+│   └── webfonts
+└── templates
+    ├── base.html
+    └── pages
+        ├── about.html
+        └── index.html
+
+```
+4. templates/base.html  
+```
+{% load static %}  //加了 {% load static %} 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BT Real Estate</title>
+    <meta name="description" content="" /> //加了
+<meta name="viewport" content="width=device-width, initial-scale=1" /> //加了
+<!-- Font Awesome -->
+<link rel="stylesheet" href="{% static 'css/all.css' %}" /> //加了
+<!-- Bootstrap -->
+<link rel="stylesheet" href="{% static 'css/bootstrap.css' %}" /> //加了
+<!-- Custom -->
+<link rel="stylesheet" href="{% static 'css/style.css' %}" />//加了
+<!-- Lightbox -->
+<link rel="stylesheet" href="{% static 'css/lightbox.min.css' %}" />//加了
+</head>
+<body>
+
+      <!-- Top Bar -->   //加了 整個TOP BAR
+  <section id="top-bar" class="p-3">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4">
+          <i class="fas fa-phone"></i> +852 2982 0546
+        </div>
+        <div class="col-md-4">
+          <i class="fas fa-envelope-open"></i> contact@btrealestate.co
+        </div>
+        <div class="col-md-4">
+          <div class="social text-right">
+            <a href="#">
+              <i class="fab fa-twitter"></i>
+            </a>
+            <a href="#">
+              <i class="fab fa-facebook"></i>
+            </a>
+            <a href="#">
+              <i class="fab fa-linkedin"></i>
+            </a>
+            <a href="#">
+              <i class="fab fa-instagram"></i>
+            </a>
+            <a href="#">
+              <i class="fab fa-pinterest"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+   <!-- Navbar -->  //加了整個Navbar
+   <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">
+        <img src="assets/img/logo.png" class="logo" alt="">
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <ul class="navbar-nav">
+          <li class="nav-item active mr-3">
+            <a class="nav-link" href="index.html">Home</a>
+          </li>
+          <li class="nav-item mr-3">
+            <a class="nav-link" href="about.html">About</a>
+          </li>
+          <li class="nav-item mr-3">
+            <a class="nav-link" href="listings.html">Featured Listings</a>
+          </li>
+        </ul>
+
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item mr-3">
+            <a class="nav-link" href="register.html">
+              <i class="fas fa-user-plus"></i> Register</a>
+          </li>
+          <li class="nav-item mr-3">
+            <a class="nav-link" href="login.html">
+              <i class="fas fa-sign-in-alt"></i>
+
+              Login</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+    {% block content %}
+
+    {% endblock %}
+
+      <!-- Footer -->  //加了加了整個Footer
+  <footer id="main-footer" class="py-4 bg-primary text-white text-center">
+    Copyright &copy;
+    <span class="year"></span> BT Real Estate
+  </footer>
+
+  <script src="{% static 'js/jquery-3.3.1.min.js' %} "></script>  //加了
+  <script src="{% static 'js/bootstrap.bundle.min.js' %} "></script> //加了
+  <script src="{% static 'js/lightbox.min.js' %} "></script> //加了
+  <script src="{% static 'js/main.js' %} "></script> //加了
+</body>
+</html>
+```
