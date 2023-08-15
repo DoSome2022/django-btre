@@ -1,14 +1,14 @@
 ## python django 指南
 
+part2 - 181  
+part3 - 223 
+
+---  
+
 要做的事：
 -建立/安裝 一個 virtual environment
 -建立一個空白的django 項目
 -建立git .
-
----  
-
-part2 - 181
-
 ---
 
 ### 建立一個virtual environment  
@@ -180,7 +180,7 @@ GitHub.sublime-settings
 
 ---
 
-###  part2
+###  part2 - 181
 
 耍做的事：
 - 建立一個名叫pages app  
@@ -220,3 +220,51 @@ INSTALLED_APPS = [
 
 ---
 
+## part3 - 223  
+
+要做的事:  
+- 在pages urls.py增加url  
+- 在pages views.py增加function  
+- 在btre urls.py增加url
+
+---
+
+#### 在pages views.py增加function  
+1. 在pages views.py 裹  
+```
+from django.shortcuts import render
+from django.http import HttpResponse //增加了這個
+
+def index(request): //增加了function
+    return HttpResponse("<h1>hi</h1>")
+
+```
+
+#### 在pages urls.py增加url  
+
+1. 在pages 裹新增 urls.py
+```
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('',views.index, name="index")
+]
+
+```
+
+#### 在btre urls.py增加url
+
+1. 在btre/urls.py
+```
+from django.contrib import admin
+from django.urls import path , include //增加include
+
+urlpatterns = [
+    path('', include('pages.urls')), // 增加了這個
+    path('admin/', admin.site.urls),
+    
+]
+
+```  
+---
