@@ -1,7 +1,9 @@
 ## python django 指南
 
 part2 - 181  
-part3 - 223 
+part3 - 223  
+part4 - 272  
+
 
 ---  
 
@@ -268,3 +270,105 @@ urlpatterns = [
 
 ```  
 ---
+## part4 - 273  
+要做的事:
+- 建立template為了顥示pages app的內容  
+
+---
+#### 建立template為了顥示pages app的內容  
+
+1. 在btre/settings.py  
+```
+...
+
+import os // 增加這個
+from pathlib import Path
+
+...
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(BASE_DIR,'templates')], // 增加os.path.join(BASE_DIR,'templates')
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
+...
+
+```  
+
+2.  在主目錄裹加建templates文件夾,在templates裹加建pages文件夾和base.html，
+在pages裹創建about.html 和 index.html
+
+```
+.
+├── btre
+├── manage.py
+├── pages
+└── templates
+    ├── base.html
+    └── pages
+        ├── about.html
+        └── index.html
+
+```  
+3. pages/urls.py 
+```
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('',views.index, name="index"),
+    path('about',views.about, name="about") //增加了這個
+]
+```
+4. pages/views.py  
+```
+from django.shortcuts import render
+from django.http import HttpResponse
+
+# Create your views here.
+def index(request):
+    return render(request,"pages/index.html") //改了return render(request,"pages/index.html")
+
+def about(request): //增加了
+    return render(request,"pages/about.html") //增加了
+```
+5. templates/base.html  
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BT Real Estate</title>
+</head>
+<body>
+    {% block content %}
+
+    {% endblock %}
+</body>
+</html>
+```  
+6. templates/pages/about.html  
+```
+{% extends 'base.html' %}{% block content %}
+<h1>about</h1>
+{% endblock %}
+```  
+7. templates/pages/index.html  
+```
+{% extends 'base.html' %} {% block content %}
+<h1>home</h1>
+{% endblock %}
+```  
+----
