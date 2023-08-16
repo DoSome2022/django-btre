@@ -8,6 +8,7 @@ part6 - 568
 part7 - 729  
 part8 - 1355  
 part9 - 1483  
+part10 - 1881  
 
 
 
@@ -1877,3 +1878,45 @@ python manage.py makemigrations
 python manage.py migrate
 ```
 ----
+
+## part10 - 1881  
+要做的事:
+- 上傳圖片  
+
+1. btre/settings.py  
+```
+...
+
+
+
+STATIC_ROOT = os.path.join(BASE_DIR,'static')
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR,'btre/static')
+]
+
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  //增加
+MEDIA_URL = '/media/'  //增加
+
+
+
+
+....
+```
+
+2. btre/urls.py  
+```
+from django.contrib import admin
+from django.urls import path , include
+from django.conf import settings //增加
+from django.conf.urls.static import static//增加
+
+urlpatterns = [
+    path('', include('pages.urls')),
+    path('listings/',include('listings.urls')),
+    path('admin/', admin.site.urls)
+    
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) //增加
+```
+---
