@@ -7,6 +7,8 @@ part5 - 377
 part6 - 568    
 part7 - 729  
 part8 - 1355  
+part9 - 1483  
+
 
 
 
@@ -1480,3 +1482,216 @@ def search(request):
 
 ---
 
+## part9 - 1483  
+要做的事:
+- listings html內容改變  
+- listings admin  
+- listings models
+
+----
+
+#### listings html內容改變  
+
+1. templates/listings/listings.html  
+
+```
+{% extends 'base.html' %}
+{% load humanize %}
+{% block title %}| Browse Property Listings{% endblock title %}
+{% block content %}
+<section id="showcase-inner" class="py-5 text-white">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-12">
+                <h1 class="display-4">Browse Our Properties</h1>
+                <p class="lead">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Sunt, pariatur!</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Breadcrumb -->
+<section id="bc" class="mt-3">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'index' %}">
+                        <i class="fas fa-home"></i> Home</a>
+                </li>
+                <li class="breadcrumb-item active"> Browse Listings</li>
+            </ol>
+        </nav>
+    </div>
+</section>
+<!-- Alerts -->
+{% include 'partials/_alerts.html' %}
+
+<!-- Listings -->
+<section id="listings" class="py-4">
+    <div class="container">
+        <div class="row">
+            {% if listings %}
+
+            {% for listing in listings %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card listing-preview">
+                    <img class="card-img-top" src="{{ listing.photo_main.url }}" alt="">
+                    <div class="card-img-overlay">
+                        <h2>
+                            <span class="badge badge-secondary text-white">${{ listing.price|intcomma }}</span>
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="listing-heading text-center">
+                            <h4 class="text-primary">{{ listing.title }}</h4>
+                            <p>
+                                <i class="fas fa-map-marker text-secondary"></i>&nbsp{{ listing.city }}&nbsp;
+                                {{ listing.state }},&nbsp{{ listing.zipcode }}</p>
+                        </div>
+                        <hr>
+                        <div class="row py-2 text-secondary">
+                            <div class="col-6">
+                                <i class="fas fa-th-large"></i> Sqft: {{ listing.sqft }}</div>
+                            <div class="col-6">
+                                <i class="fas fa-car"></i> Garage: {{ listing.garage }}</div>
+                        </div>
+                        <div class="row py-2 text-secondary">
+                            <div class="col-6">
+                                <i class="fas fa-bed"></i> Bedrooms: {{ listing.bedrooms }}</div>
+                            <div class="col-6">
+                                <i class="fas fa-bath"></i> Bathrooms: {{ listing.bathrooms }}</div>
+                        </div>
+                        <hr>
+                        <div class="row py-2 text-secondary">
+                            <div class="col-12">
+                                <i class="fas fa-user"></i> {{ listing.realtor.name }}</div>
+                        </div>
+                        <div class="row text-secondary pb-2">
+                            <div class="col-12">
+                                <i class="fas fa-clock"></i> {{ listing.list_date | timesince }}</div>
+                        </div>
+                        <hr>
+                        <a href="{% url 'listing' listing.id %}" class="btn btn-primary btn-block">More Info</a>
+                    </div>
+                </div>
+            </div>
+
+            {% endfor %}
+
+            {% else %}
+            <div class="col-md-12">
+                <p>No Listings Avialable</p>
+            </div>
+
+            {% endif %}
+        </div>
+
+        <!-- Pgination -->
+        <div class="row">
+            <div class="col-md-12">
+                {% if listings.has_other_pages %}
+                <ul class="pagination">
+
+                    {% if listings.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ listings.previous_page_number }}">&laquo;</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link">&laquo;</a>
+                    </li>
+                    {% endif %}
+
+
+                    {% for i in listings.paginator.page_range %}
+                    {% if listings.number == i %}
+                    <li class="page-item active">
+                        <a class="page-link">{{ i }}</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+
+                    {% if listings.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ listings.next_page_number }}">&raquo;</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link">&raquo;</a>
+                    </li>
+                    {% endif %}
+                </ul>
+                {% endif %}
+            </div>
+        </div>
+</section>
+{% endblock content %}
+```
+#### listings admin  
+1. listings/admin.py
+```
+from django.contrib import admin
+from .models import Listing
+
+
+class ListingAdmin(admin.ModelAdmin):
+    list_display = ('id', 'title', 'is_published',
+                    'price', 'list_date', 'realtor')
+    list_display_links = ('id', 'title')
+    list_filter = ('realtor',)
+    list_editable = ('is_published',)
+    search_fields = ('title', 'description', 'city',
+                     'state', 'zipcode', 'price')
+    list_per_page = 25
+
+
+admin.site.register(Listing, ListingAdmin)
+```
+---
+
+#### listings models
+1. listings/models.py
+```
+from django.db import models
+from django.utils import timezone
+from realtors.models import Realtor
+
+
+class Listing(models.Model):
+    realtor = models.ForeignKey(Realtor, on_delete=models.DO_NOTHING)
+    title = models.CharField(max_length=200)
+    city = models.CharField(max_length=100)
+    state = models.CharField(max_length=100)
+    zipcode = models.CharField(max_length=100)
+    description = models.TextField()
+    price = models.IntegerField()
+    bedrooms = models.IntegerField()
+    bathrooms = models.DecimalField(max_digits=2, decimal_places=1)
+    garage = models.IntegerField(default=0)
+    sqft = models.IntegerField()
+    lot_size = models.DecimalField(max_digits=5, decimal_places=1)
+    photo_main = models.ImageField(upload_to='photos/%Y/%m/%d/')
+    photo_1 = models.ImageField(upload_to='photos/%Y/%m/%d/', blank=True)
+    photo_2 = models.ImageField(upload_to='photos/%Y/%m/%d/', blank=True)
+    photo_3 = models.ImageField(upload_to='photos/%Y/%m/%d/', blank=True)
+    photo_4 = models.ImageField(upload_to='photos/%Y/%m/%d/', blank=True)
+    photo_5 = models.ImageField(upload_to='photos/%Y/%m/%d/', blank=True)
+    photo_6 = models.ImageField(upload_to='photos/%Y/%m/%d/', blank=True)
+    is_published = models.BooleanField(default=True)
+    list_date = models.DateTimeField(default=timezone.now, blank=True)
+
+    def __str__(self):
+        return self.title
+```
+2. 在終端機  
+
+```
+python manage.py makemigrations
+python manage.py migrate
+```
+----
