@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'pages'
+    'pages',
+    'realtors'
 ]
 
 MIDDLEWARE = [
@@ -77,7 +78,10 @@ WSGI_APPLICATION = 'btre.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': 'btre_prod',
+        'USER': 'postgres',
+        'PASSWORD': '1234',
+        'HOST': '5432'
     }
 }
 

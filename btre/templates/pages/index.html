@@ -1,3 +1,258 @@
 {% extends 'base.html' %} {% block content %}
-<h1>home</h1>
+  <!-- Showcase -->
+  <section id="showcase">
+    <div class="container text-center">
+      <div class="home-search p-5">
+        <div class="overlay p-5">
+          <h1 class="display-4 mb-4">
+            Property Searching Just Got So Easy
+          </h1>
+          <p class="lead">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Recusandae quas, asperiores eveniet vel nostrum magnam
+            voluptatum tempore! Consectetur, id commodi!</p>
+          <div class="search">
+            <form action="search.html">
+              <!-- Form Row 1 -->
+              <div class="form-row">
+                <div class="col-md-4 mb-3">
+                  <label class="sr-only">Keywords</label>
+                  <input type="text" name="keywords" class="form-control" placeholder="Keyword (Pool, Garage, etc)">
+                </div>
+
+                <div class="col-md-4 mb-3">
+                  <label class="sr-only">City</label>
+                  <input type="text" name="city" class="form-control" placeholder="City">
+                </div>
+
+                <div class="col-md-4 mb-3">
+                  <label class="sr-only">State</label>
+                  <select name="state" class="form-control">
+                    <option selected="true" disabled="disabled">State (All)</option>
+                    <option value="A">Central and West</option>
+                    <option value="C">Eastern</option>
+                    <option value="D">Southern</option>
+                    <option value="B">Wan Chai</option>
+                    <option value="G">Kowloon City</option>
+                    <option value="J">Kwun Tong</option>
+                    <option value="F">Sham Shui Po</option>
+                    <option value="H">Wong Tai Sin</option>
+                    <option value="E">Yau Tsim Mong</option>
+                    <option value="T">Island</option>
+                    <option value="S">Kwai Tsing</option>
+                    <option value="N">North</option>
+                    <option value="Q">Sai Kung</option>
+                    <option value="R">Sha Tin</option>
+                    <option value="P">Tai Po</option>
+                    <option value="K">Tsuen Wan</option>
+                    <option value="L">Tuen Mun</option>
+                    <option value="M">Yuen Long</option>
+                  </select>
+                </div>
+              </div>
+              <!-- Form Row 2 -->
+              <div class="form-row">
+                <div class="col-md-6 mb-3">
+                  <label class="sr-only">Bedrooms</label>
+                  <select name="bedrooms" class="form-control">
+                    <option selected="true" disabled="disabled">Bedrooms (All)</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                  </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <select name="price" class="form-control" id="type">
+                    <option selected="true" disabled="disabled">Max Price (Any)</option>
+                    <option value="1000000">$1,000,000</option>
+                    <option value="2000000">$2,000,000</option>
+                    <option value="3000000">$3,000,000</option>
+                    <option value="4000000">$4,000,000</option>
+                    <option value="5000000">$5,000,000</option>
+                    <option value="6000000">$6,000,000</option>
+                    <option value="7000000">$7,000,000</option>
+                    <option value="8000000">$8,000,000</option>
+                    <option value="9000000">$9,000,000</option>
+                    <option value="10000000">$100M+</option>
+                  </select>
+                </div>
+              </div>
+              <button class="btn btn-secondary btn-block mt-4" type="submit">Submit form</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Listings -->
+  <section id="listings" class="py-5">
+    <div class="container">
+      <h3 class="text-center mb-3">Latest Listings</h3>
+      <div class="row">
+        <!-- Listing 1 -->
+        <div class="col-md-6 col-lg-4 mb-4">
+          <div class="card listing-preview">
+            <img class="card-img-top" src="assets/img/homes/home-1_.jpg" alt="">
+            <div class="card-img-overlay">
+              <h2>
+                <span class="badge badge-secondary text-white">$5,380,000</span>
+              </h2>
+            </div>
+            <div class="card-body">
+              <div class="listing-heading text-center">
+                <h4 class="text-primary">Tai Sang Building, 1A Shanshi Street, Kennedy Town, Hong Kong</h4>
+                <p>
+                  <i class="fas fa-map-marker text-secondary"></i> Central and West </p>
+              </div>
+              <hr>
+              <div class="row py-2 text-secondary">
+                <div class="col-6">
+                  <i class="fas fa-th-large"></i> Sqft: 3708</div>
+                <div class="col-6">
+                  <i class="fas fa-car"></i> Parking space: 0</div>
+              </div>
+              <div class="row py-2 text-secondary">
+                <div class="col-6">
+                  <i class="fas fa-bed"></i> Bedrooms: 2</div>
+                <div class="col-6">
+                  <i class="fas fa-bath"></i> Bathrooms: 1</div>
+              </div>
+              <hr>
+              <div class="row py-2 text-secondary">
+                <div class="col-6">
+                  <i class="fas fa-user"></i> Kyle Brown</div>
+              </div>
+              <div class="row text-secondary pb-2">
+                <div class="col-6">
+                  <i class="fas fa-clock"></i> 5 days ago</div>
+              </div>
+              <hr>
+              <a href="listing.html" class="btn btn-primary btn-block">More Info</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Listing 2 -->
+        <div class="col-md-6 col-lg-4 mb-4">
+          <div class="card listing-preview">
+            <img class="card-img-top" src="assets/img/homes/home-2_.jpg" alt="">
+            <div class="card-img-overlay">
+              <h2>
+                <span class="badge badge-secondary text-white">$5,550,000</span>
+              </h2>
+            </div>
+            <div class="card-body">
+              <div class="listing-heading text-center">
+                <h4 class="text-primary">Block A, Shun Lee Building</h4>
+                <p>
+                  <i class="fas fa-map-marker text-secondary"></i> 240 Ferry Street, Yau Ma Tei, Kowloon</p>
+              </div>
+              <hr>
+              <div class="row py-2 text-secondary">
+                <div class="col-6">
+                  <i class="fas fa-th-large"></i> Sqft: 4812</div>
+                <div class="col-6">
+                  <i class="fas fa-car"></i> Parking space: 1</div>
+              </div>
+              <div class="row py-2 text-secondary">
+                <div class="col-6">
+                  <i class="fas fa-bed"></i> Bedrooms: 2</div>
+                <div class="col-6">
+                  <i class="fas fa-bath"></i> Bathrooms: 1</div>
+              </div>
+              <hr>
+              <div class="row py-2 text-secondary">
+                <div class="col-6">
+                  <i class="fas fa-user"></i> Mark Hudson</div>
+              </div>
+              <div class="row text-secondary pb-2">
+                <div class="col-6">
+                  <i class="fas fa-clock"></i> 5 days ago</div>
+              </div>
+              <hr>
+              <a href="listing.html" class="btn btn-primary btn-block">More Info</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Listing 3 -->
+        <div class="col-md-6 col-lg-4 mb-4">
+          <div class="card listing-preview">
+            <img class="card-img-top" src="assets/img/homes/home-3_.jpg" alt="">
+            <div class="card-img-overlay">
+              <h2>
+                <span class="badge badge-secondary text-white">$300,580,000</span>
+              </h2>
+            </div>
+            <div class="card-body">
+              <div class="listing-heading text-center">
+                <h4 class="text-primary">Talent Bay Phase 1 Tower 2</h4>
+                <p>
+                  <i class="fas fa-map-marker text-secondary"></i>Tai Po</p>
+              </div>
+              <hr>
+              <div class="row py-2 text-secondary">
+                <div class="col-6">
+                  <i class="fas fa-th-large"></i> Sqft: 24444</div>
+                <div class="col-6">
+                  <i class="fas fa-car"></i> Parking space: 0</div>
+              </div>
+              <div class="row py-2 text-secondary">
+                <div class="col-6">
+                  <i class="fas fa-bed"></i> Bedrooms: 5</div>
+                <div class="col-6">
+                  <i class="fas fa-bath"></i> Bathrooms: 3</div>
+              </div>
+              <hr>
+              <div class="row py-2 text-secondary">
+                <div class="col-6">
+                  <i class="fas fa-user"></i> Mark Hudson</div>
+              </div>
+              <div class="row text-secondary pb-2">
+                <div class="col-6">
+                  <i class="fas fa-clock"></i> 5 days ago</div>
+              </div>
+              <hr>
+              <a href="listing.html" class="btn btn-primary btn-block">More Info</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section id="services" class="py-5 bg-secondary text-white">
+    <div class="container">
+      <div class="row text-center">
+        <div class="col-md-4">
+          <i class="fas fa-comment fa-4x mr-4"></i>
+          <hr>
+          <h3>Consulting Services</h3>
+          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Incidunt, debitis nam! Repudiandae, provident iste consequatur
+            hic dignissimos ratione ea quae.</p>
+        </div>
+        <div class="col-md-4">
+          <i class="fas fa-home fa-4x mr-4"></i>
+          <hr>
+          <h3>Propery Management</h3>
+          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Incidunt, debitis nam! Repudiandae, provident iste consequatur
+            hic dignissimos ratione ea quae.</p>
+        </div>
+        <div class="col-md-4">
+          <i class="fas fa-suitcase fa-4x mr-4"></i>
+          <hr>
+          <h3>Renting & Selling</h3>
+          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Incidunt, debitis nam! Repudiandae, provident iste consequatur
+            hic dignissimos ratione ea quae.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 {% endblock %}
