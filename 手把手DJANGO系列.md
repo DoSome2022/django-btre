@@ -6,6 +6,8 @@ part4 - 272
 part5 - 377  
 part6 - 568    
 part7 - 729  
+part8 - 1355  
+
 
 
 
@@ -1351,3 +1353,130 @@ Login</a
 </nav>
 ```
 ---
+
+## part8 - 1355  
+要做的事:
+- 建立listings app  
+- listings url  
+- listings html  
+- listings views  
+
+---
+#### 建立listings app 
+1. 在終端機  
+```
+python manage.py startapp listings
+```  
+
+#### listings url 
+1. 在listings裹新增urls.py  
+```
+from django.urls import path
+from . import views
+urlpatterns = [
+    path('',views.index,name='listings'),
+    path('<int:listing_id>',views.listing,name='listing'),
+    path('search',views.search,name='search')
+]
+
+```
+2. btre/urls.py
+```
+from django.contrib import admin
+from django.urls import path , include
+
+urlpatterns = [
+    path('', include('pages.urls')),
+    path('listings/',include('listings.urls')),//增加
+    path('admin/', admin.site.urls)
+    
+]
+
+
+```
+3. btre/settings.py
+```
+...
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'pages',
+    'realtors',
+    'listings'
+]
+...
+```
+4. templates/partials/_navbar.html  
+```
+...
+
+<div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+<ul class="navbar-nav">
+<li class="nav-item active mr-3">
+<a class="nav-link" href="{% url 'index' %}">Home</a>
+</li>
+<li class="nav-item mr-3">
+<a class="nav-link" href="{% url 'about' %}">About</a>
+</li>
+<li class="nav-item mr-3">
+<a class="nav-link" href="{% url 'listings' %}">Featured Listings</a> //增加
+</li>
+</ul>
+...
+```
+templates/pages/about.html  
+```
+...
+
+<!-- Work -->
+<section id="work" class="bg-dark text-white text-center">
+    <h2 class="display-4">We Work For You</h2>
+    <h4>Lorem ipsum dolor sit amet consectetur adipisicing elit. Autem velit aperiam, unde aliquid at similique!</h4>
+    <hr>
+    <a href="{% url 'listings' %}" class="btn btn-secondary text-white btn-lg">View Our Featured Listings</a>
+</section>
+...
+```  
+---
+#### listings views  
+
+1. listings/views.py  
+```
+from django.shortcuts import render
+
+# Create your views here.
+
+
+def index(request):
+    return render(request, 'listings/listings.html')
+
+def listing(request):
+    return render(request,'listings/listing.html')
+
+def search(request):
+    return render(request, 'listings/search.html') 
+```
+---
+
+#### listings html 
+在templates裹新開listings的文件夾，裹面分別開listing.html , listings.html , search.html
+1. templates/listings/listing.html
+```
+<h1>listing</h1>
+```
+2. templates/listings/listings.html
+```
+<h1>listings</h1>
+```
+3. templates/listings/search.html
+```
+<h1>searching</h1>
+```
+
+---
+
