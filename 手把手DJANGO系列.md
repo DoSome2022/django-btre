@@ -13,6 +13,7 @@ part11 - 1923
 part12 - 2126  
 part13 - 12719  
 part14 - 13057  
+part15 - 13496  
 
 
 
@@ -13492,3 +13493,429 @@ def about(request):
 ```
 
 ---
+
+## part15 - 13496  
+---
+要做的事:  
+- 加入search功能
+
+---
+
+#### 加入search功能
+
+1. listings/views.py  
+```
+from django.shortcuts import render , get_object_or_404
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from .choices import price_choices, state_choices, bedroom_choices //加入
+from .models import Listing
+# Create your views here.
+
+
+def index(request):
+    # listings = Listing.objects.all()
+    listings = Listing.objects.order_by('-list_date').filter(is_published=True)
+    paginator = Paginator(listings, 3)
+    page = request.GET.get('page')
+    paged_listings = paginator.get_page(page)
+    context = {
+        'listings': paged_listings
+    }
+
+    return render(request, 'listings/listings.html', context)
+
+def listing(request, listing_id):
+    listing = get_object_or_404(Listing, pk = listing_id)
+    context = {
+        'listing': listing
+    }
+    return render(request,'listings/listing.html',context)
+
+def search(request):
+    context = { //加入
+    'state_choices': state_choices, //加入
+    'price_choices': price_choices, //加入
+    "bedroom_choices": bedroom_choices //加入
+    } //加入
+    return render(request, 'listings/search.html',context) //加入context
+```
+2. templates/listings/search.html  
+```
+{% extends 'base.html' %}
+<!-- load humanize -->
+{% load humanize %}
+<!-- block begin -->
+{% block content %}
+<section id="showcase-inner" class="showcase-search text-white py-5">
+<div class="container">
+<div class="row text-center">
+<div class="col-md-12">
+<form action="search.html">
+<!-- Form Row 1 -->
+<div class="form-row">
+<div class="col-md-4 mb-3">
+<label class="sr-only">Keywords</label>
+<input
+
+type="text"
+
+name="keywords"
+class="form-control"
+placeholder="Keyword (Pool, Garage, etc)"
+
+/>
+</div>
+
+<div class="col-md-4 mb-3">
+<label class="sr-only">City</label>
+<input
+type="text"
+name="city"
+class="form-control"
+placeholder="City"
+/>
+</div>
+<div class="col-md-4 mb-3">
+<label class="sr-only">State</label>
+<select name="state" class="form-control">
+<option selected="true" disabled="disabled">State (All)</option>
+{% for key, value in state_choices.items %}
+<option value="{{key}}">{{value}}</option>
+{% endfor %}
+</select>
+</div>
+</div>
+<!-- Form Row 2 -->
+<div class="form-row">
+<div class="col-md-6 mb-3">
+<label class="sr-only">Bedrooms</label>
+<select name="bedrooms" class="form-control">
+<option selected="true" disabled="disabled">
+Bedrooms (Any)
+</option>
+{% for key,value in bedroom_choices.items %}
+<option value="{{key}}">{{value}}</option>
+{% endfor %}
+</select>
+</div>
+<div class="col-md-6 mb-3">
+<select name="price" class="form-control">
+<option selected="true" disabled="disabled">
+Max Price (All)
+</option>
+{% for key,value in price_choices.items %}
+<option value="{{key}}">{{value}}</option>
+{% endfor %}
+</select>
+</div>
+</div>
+<button class="btn btn-secondary btn-block mt-4" type="submit">
+Submit form
+</button>
+</form>
+</div>
+</div>
+</div>
+</section>
+<!-- Breadcrumb -->
+<section id="bc" class="mt-3">
+<div class="container">
+<nav aria-label="breadcrumb">
+<ol class="breadcrumb">
+<li class="breadcrumb-item">
+<a href="{% url 'index' %}"> <i class="fas fa-home"></i> Home</a>
+</li>
+<li class="breadcrumb-item">
+<a href="{% url 'listings' %}">Browse Listings</a>
+</li>
+<li class="breadcrumb-item active">Search Results</li>
+</ol>
+</nav>
+</div>
+</section>
+<!-- Listings -->
+<section id="listings" class="py-4">
+<div class="container">
+<div class="row">
+{% if listings %} {% for listing in listings %}
+<!-- Listing 1 -->
+<div class="col-md-6 col-lg-4 mb-4">
+<div class="card listing-preview">
+<img class="card-img-top" src="assets/img/homes/home-1.jpg" alt="" />
+<div class="card-img-overlay">
+<h2>
+<span class="badge badge-secondary text-white">$490,000</span>
+</h2>
+</div>
+<div class="card-body">
+<div class="listing-heading text-center">
+<h4 class="text-primary">45 Drivewood Circle</h4>
+<p>
+<i class="fas fa-map-marker text-secondary"></i> Norwood MA,
+02062
+</p>
+</div>
+<hr />
+<div class="row py-2 text-secondary">
+<div class="col-6">
+<i class="fas fa-th-large"></i> Sqft: 3200
+</div>
+<div class="col-6"><i class="fas fa-car"></i> Garage: 2</div>
+</div>
+<div class="row py-2 text-secondary">
+<div class="col-6"><i class="fas fa-bed"></i> Bedrooms: 3</div>
+<div class="col-6"><i class="fas fa-bath"></i> Bathrooms: 2</div>
+</div>
+<hr />
+<div class="row py-2 text-secondary">
+<div class="col-12"><i class="fas fa-user"></i> Kyle Chan</div>
+</div>
+<div class="row text-secondary pb-2">
+<div class="col-6"><i class="fas fa-clock"></i> 2 days ago</div>
+</div>
+<hr />
+<a href="listing.html" class="btn btn-primary btn-block"
+,
+>More Info</a
+>
+</div>
+</div>
+</div>
+{% endfor %} {% else %}
+<div class="col-md-12">
+<p>No Listings Available</p>
+</div>
+{% endif %}
+</div>
+</div>
+</section>
+{% endblock %}
+```
+3. listings/views.py  
+```
+from django.shortcuts import render , get_object_or_404
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from .choices import price_choices, state_choices, bedroom_choices
+from .models import Listing
+# Create your views here.
+
+
+def index(request):
+    # listings = Listing.objects.all()
+    listings = Listing.objects.order_by('-list_date').filter(is_published=True)
+    paginator = Paginator(listings, 3)
+    page = request.GET.get('page')
+    paged_listings = paginator.get_page(page)
+    context = {
+        'listings': paged_listings
+    }
+
+    return render(request, 'listings/listings.html', context)
+
+def listing(request, listing_id):
+    listing = get_object_or_404(Listing, pk = listing_id)
+    context = {
+        'listing': listing
+    }
+    return render(request,'listings/listing.html',context)
+
+def search(request):
+
+    queryset_list = Listing.objects.order_by('-list_date') //加了
+    if 'keywords' in request.GET:  //加了
+        keywords = request.GET['keywords']  //加了
+        if keywords:  //加了
+            queryset_list = queryset_list.filter(  //加了
+            desciption__icontains=keywords)  //加了
+    if 'city' in request.GET:    //加了
+        city = request.GET['city']  //加了
+        if city:   //加了
+            queryset_list = queryset_list.filter(  //加了
+            city_iexact=city)   //加了
+    if 'state' in request.GET:   //加了
+        state = request.GET['state']  //加了
+        if state:   //加了
+            queryset_list = queryset_list.filter(  //加了
+            city__iexact=state)   //加了
+    if 'bedrooms' in request.GET:   //加了
+        bedrooms = request.GET['bedrooms']  //加了
+        if bedrooms:  //加了
+            queryset_list = queryset_list.filter(  //加了
+            bedrooms__lte=bedrooms)  //加了
+    if 'price' in request.GET:  //加了
+        price = request.GET['price']  //加了
+        if price:  //加了
+            queryset_list = queryset_list.filter(  //加了
+            price__lte=price)            //加了        
+
+    context = {
+    'state_choices': state_choices,
+    'price_choices': price_choices,
+    "bedroom_choices": bedroom_choices,
+    'listings': queryset_list,
+    'values': request.GET
+    }
+    return render(request, 'listings/search.html',context) 
+```
+4. templates/listings/search.html  
+```
+{% extends 'base.html' %}
+<!-- load humanize -->
+{% load humanize %}
+<!-- block begin -->
+{% block content %}
+<section id="showcase-inner" class="showcase-search text-white py-5">
+<div class="container">
+<div class="row text-center">
+<div class="col-md-12">
+<form action="{% url 'search' %}"> // 改了
+<!-- Form Row 1 -->
+<div class="form-row">
+<div class="col-md-4 mb-3">
+<label class="sr-only">Keywords</label>
+<input
+
+type="text"
+
+name="keywords"
+class="form-control"
+placeholder="Keyword (Pool, Garage, etc)"
+value="{{values.keywords}}"  //加了
+
+/>
+</div>
+
+<div class="col-md-4 mb-3">
+<label class="sr-only">City</label>
+<input
+type="text"
+name="city"
+class="form-control"
+placeholder="City"
+value="{{values.city}}" //加了
+/>
+</div>
+<div class="col-md-4 mb-3">
+<label class="sr-only">State</label>
+<select name="state" class="form-control">
+<option selected="true" disabled="disabled">State (All)</option>
+{% for key, value in state_choices.items %}
+<option value="{{key}}"
+{% if key == values.state %} selected //加了
+{% endif %}  //加了
+>{{value}}</option>
+{% endfor %}
+</select>
+</div>
+</div>
+<!-- Form Row 2 -->
+<div class="form-row">
+<div class="col-md-6 mb-3">
+<label class="sr-only">Bedrooms</label>
+<select name="bedrooms" class="form-control">
+<option selected="true" disabled="disabled">
+Bedrooms (Any)
+</option>
+{% for key,value in bedroom_choices.items %}
+<option value="{{key}}
+{% if key == values.bedrooms %} selected //加了
+{% endif %}  //加了
+">{{value}}</option>
+{% endfor %}
+</select>
+</div>
+<div class="col-md-6 mb-3">
+<select name="price" class="form-control">
+<option selected="true" disabled="disabled">
+Max Price (All)
+</option>
+{% for key,value in price_choices.items %}
+<option value="{{key}}"
+{% if key == values.price %} selected  //加了
+{% endif %}   //加了
+>{{value}}</option>
+{% endfor %}
+</select>
+</div>
+</div>
+<button class="btn btn-secondary btn-block mt-4" type="submit">
+Submit form
+</button>
+</form>
+</div>
+</div>
+</div>
+</section>
+<!-- Breadcrumb -->
+<section id="bc" class="mt-3">
+<div class="container">
+<nav aria-label="breadcrumb">
+<ol class="breadcrumb">
+<li class="breadcrumb-item">
+<a href="{% url 'index' %}"> <i class="fas fa-home"></i> Home</a>
+</li>
+<li class="breadcrumb-item">
+<a href="{% url 'listings' %}">Browse Listings</a>  //改了
+</li>
+<li class="breadcrumb-item active">Search Results</li>
+</ol>
+</nav>
+</div>
+</section>
+<!-- Listings -->
+<section id="listings" class="py-4">
+<div class="container">
+<div class="row">
+{% if listings %} {% for listing in listings %}
+<!-- Listing 1 -->
+<div class="col-md-6 col-lg-4 mb-4">
+<div class="card listing-preview">
+<img class="card-img-top" src="{{listing.photo_main.url}}" alt="" /> //改了
+<div class="card-img-overlay">
+<h2>
+<span class="badge badge-secondary text-white">${{listing.price | intcomma}}</span> //改了
+</h2>
+</div>
+<div class="card-body">
+<div class="listing-heading text-center">
+<h4 class="text-primary">{{listing.title}}</h4> //改了
+<p>
+<i class="fas fa-map-marker text-secondary"></i>{{listing.city}} {{listing.state}}, {{listing.zipcode}}  //改了
+</p>
+</div>
+<hr />
+<div class="row py-2 text-secondary">
+<div class="col-6">
+<i class="fas fa-th-large"></i> Sqft: {{listing.sqft}}  //改了
+</div>
+<div class="col-6"><i class="fas fa-car"></i> Garage: {{listing.garage}}</div>  //改了
+</div>
+<div class="row py-2 text-secondary">
+<div class="col-6"><i class="fas fa-bed"></i> Bedrooms: {{listing.bedrooms}}</div>  //改了
+<div class="col-6"><i class="fas fa-bath"></i> Bathrooms: {{listing.bathroom}}</div>  //改了
+</div>
+<hr />
+<div class="row py-2 text-secondary">
+<div class="col-12"><i class="fas fa-user"></i> {{listing.realtor.name}}</div>  //改了
+</div>
+<div class="row text-secondary pb-2">
+<div class="col-6"><i class="fas fa-clock"></i> {{listing.list_date | timesince}}</div>  //改了
+</div>
+<hr />
+<a href="{% url 'listing' listing.id %}" class="btn btn-primary btn-block"
+,
+>More Info</a
+>
+</div>
+</div>
+</div>
+{% endfor %} {% else %}
+<div class="col-md-12">
+<p>No Listings Available</p>
+</div>
+{% endif %}
+</div>
+</div>
+</section>
+{% endblock %}
+```
