@@ -12,6 +12,8 @@ part10 - 1881
 part11 - 1923  
 part12 - 2126  
 part13 - 12719  
+part14 - 13057  
+
 
 
 
@@ -13054,3 +13056,439 @@ def about(request):
 
 {% endblock content %}
 ```
+## part14 - 13057  
+要做的事:
+- 建立listing頁面內容  
+- pages/index.html內容修改  
+
+---
+
+#### 建立listing頁面內容  
+1. listings/views.py  
+```
+from django.shortcuts import render , get_object_or_404 //加了 get_object_or_404
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator //加了
+from .models import Listing
+# Create your views here.
+
+
+def index(request):
+    # listings = Listing.objects.all()
+    listings = Listing.objects.order_by('-list_date').filter(is_published=True) //加了
+    paginator = Paginator(listings, 3)  //加了
+    page = request.GET.get('page')  //加了
+    paged_listings = paginator.get_page(page)  //加了
+    context = {
+        'listings': paged_listings  //改了 paged_listings
+    }
+
+    return render(request, 'listings/listings.html', context)
+
+def listing(request, listing_id):
+    listing = get_object_or_404(Listing, pk = listing_id) //加了
+    context = {  //加了
+        'listing': listing  //加了
+    } //加了
+    return render(request,'listings/listing.html',context) //加了 context
+
+def search(request):
+    return render(request, 'listings/search.html') 
+```  
+
+---  
+
+2. templates/listings/listing.html  
+```
+{% extends 'base.html' %}
+<!-- add humanaize -->
+{% load humanize %}
+<!-- main block -->
+{% block content %}
+<section id="showcase-inner" class="py-5 text-white">
+<div class="container">
+<div class="row text-center">
+<div class="col-md-12">
+<h1 class="display-4">{{listing.title}}</h1>
+<p class="lead">
+<i class="fas fa-map-marker"></i> {{listing.city}} {{listing.state}},
+{{listing.zipcode}}
+</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Breadcrumb -->
+<section id="bc" class="mt-3">
+<div class="container">
+<nav>
+<ol class="breadcrumb">
+<li class="breadcrumb-item">
+<a href="{% url 'index' %}">Home</a>
+</li>
+<li class="breadcrumb-item">
+<a href="{% url 'listings' %}">Listings</a>
+</li>
+<li class="breadcrumb-item active">{{listing.title}}</li>
+</ol>
+</nav>
+</div>
+</section>
+<!-- Listing -->
+<section id="listing" class="py-4">
+<div class="container">
+<a href="{% url 'listings' %}" class="btn btn-light mb-4"
+,
+>Back To Listings</a
+>
+<div class="row">
+<div class="col-md-9">
+<!-- Home Main Image -->
+<img
+,
+src="{{ listing.photo_main.url }}"
+,
+alt=""
+,
+class="img-main img-fluid mb-3"
+,
+/>
+<!-- Thumbnails -->
+<div class="row mb-5 thumbs">
+{% if listing.photo_1 %}
+<div class="col-md-2">
+<a href="{{listing.photo_1.url}}" data-lightbox="home-images">
+<img src="{{listing.photo_1.url}}" alt="" class="img-fluid" />
+</a>
+</div>
+{% endif %} {% if listing.photo_2 %}
+<div class="col-md-2">
+<a href="{{listing.photo_2.url}}" data-lightbox="home-images">
+<img src="{{listing.photo_2.url}}" alt="" class="img-fluid" />
+</a>
+</div>
+{% endif %} {% if listing.photo_3 %}
+<div class="col-md-2">
+<a href="{{listing.photo_3.url}}" data-lightbox="home-images">
+<img src="{{listing.photo_3.url}}" alt="" class="img-fluid" />
+</a>
+</div>
+{% endif %} {% if listing.photo_4 %}
+<div class="col-md-2">
+<a href="{{listing.photo_4.url}}" data-lightbox="home-images">
+<img src="{{listing.photo_4.url}}" alt="" class="img-fluid" />
+</a>
+</div>
+{% endif %} {% if liting.photo_5 %}
+<div class="col-md-2">
+<a href="{{listing.photo_5.url}}" data-lightbox="home-images">
+<img src="{{listing.photo_5.url}}" alt="" class="img-fluid" />
+</a>
+</div>
+{% endif %} {% if listing.photo_6 %}
+<div class="col-md-2">
+<a href="{{listing.photo_6.url}}" data-lightbox="home-images">
+<img src="{{listing.photo_6.url}}" alt="" class="img-fluid" />
+</a>
+</div>
+{% endif %}
+</div>
+<!-- Fields -->
+<div class="row mb-5 fields">
+<div class="col-md-6">
+<ul class="list-group list-group-flush">
+<li class="list-group-item text-secondary">
+<i class="fas fa-money-bill-alt"></i> Asking Price:
+<span class="float-right">{{listing.price | intcomma}}</span>
+</li>
+<li class="list-group-item text-secondary">
+<i class="fas fa-bed"></i> Bedrooms:
+<span class="float-right">{{listing.bedrooms}}</span>
+</li>
+<li class="list-group-item text-secondary">
+<i class="fas fa-bath"></i> Bathrooms:
+<span class="float-right">{{listing.bathroom}}</span>
+</li>
+<li class="list-group-item text-secondary">
+<i class="fas fa-car"></i> Garage:
+<span class="float-right">{{listing.garage}} </span>
+</li>
+</ul>
+</div>
+<div class="col-md-6">
+<ul class="list-group list-group-flush">
+<li class="list-group-item text-secondary">
+<i class="fas fa-th-large"></i> Square Feet:
+<span class="float-right">{{listing.sqft}}</span>
+</li>
+<li class="list-group-item text-secondary">
+<i class="fas fa-square"></i> Lot Size:
+<span class="float-right">{{listing.lot_size}} Acres </span>
+</li>
+<li class="list-group-item text-secondary">
+<i class="fas fa-calendar"></i> Listing Date:
+<span class="float-right">{{listing.list_date}}</span>
+</li>
+<li class="list-group-item text-secondary">
+<i class="fas fa-bed"></i> Realtor:
+<span class="float-right">{{listing.realtor.name}} </span>
+</li>
+</ul>
+</div>
+</div>
+
+<!-- Description -->
+<div class="row mb-5">
+<div class="col-md-12">{{listing.description}}</div>
+</div>
+</div>
+<div class="col-md-3">
+<div class="card mb-3">
+<img
+class="card-img-top"
+src="{{listing.realtor.photo.url}}"
+alt="Seller of the month"
+/>
+<div class="card-body">
+<h5 class="card-title">Property Realtor</h5>
+<h6 class="text-secondary">{{listing.realtor.name}}</h6>
+</div>
+</div>
+<button
+class="btn-primary btn-block btn-lg"
+data-toggle="modal"
+data-target="#inquiryModal"
+>
+Make An Inquiry
+</button>
+</div>
+</div>
+</div>
+</section>
+/.../listings/listing.html
+<!-- Inquiry Modal -->
+<div class="modal fade" id="inquiryModal" role="dialog">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title" id="inquiryModalLabel">Make An Inquiry</h5>
+<button type="button" class="close" data-dismiss="modal">
+<span>&times;</span>
+</button>
+</div>
+<div class="modal-body">
+<form>
+<div class="form-group">
+<label for="property_name" class="col-form-label">Property:</label>
+<input
+,
+type="text"
+,
+name="listing"
+,
+class="form-control"
+,
+value="45 Drivewood Cirlce"
+,
+disabled
+,
+/>
+</div>
+<div class="form-group">
+<label for="name" class="col-form-label">Name:</label>
+<input type="text" name="name" class="form-control" required />
+</div>
+<div class="form-group">
+<label for="email" class="col-form-label">Email:</label>
+<input type="email" name="email" class="form-control" required />
+</div>
+<div class="form-group">
+<label for="phone" class="col-form-label">Phone:</label>
+<input type="text" name="phone" class="form-control" />
+</div>
+<div class="form-group">
+<label for="message" class="col-form-label">Message:</label>
+<textarea name="message" class="form-control"></textarea>
+</div>
+<hr />
+<input
+,
+type="submit"
+,
+value="Send"
+,
+class="btn btn-block btn-secondary"
+,
+/>
+</form>
+</div>
+</div>
+</div>
+</div>
+{% endblock %}
+```
+
+---
+
+## pages/index.html內容修改  
+---
+在app listings 裹開choices.py  
+1. listings/choices.py  
+```
+bedroom_choices = {
+    '1':1,
+    '2':2,
+    '3':3,
+    '4':4,
+    '5':5,
+    '6':6,
+    '7':7,
+    '8':8,
+    '9':9,
+    '10':10,
+}
+
+price_choices = {
+    '1000000':'$1,000,000',
+    '2000000':'$2,000,000',
+    '3000000':'$3,000,000',
+    '4000000':'$4,000,000',
+    '5000000':'$5,000,000',
+    '6000000':'$6,000,000',
+    '7000000':'$7,000,000',
+    '8000000':'$8,000,000',
+    '9000000':'$9,000,000',
+    '10000000':'$100M+',
+
+}
+
+state_choices = {
+                    "E":'Eastern',
+                    "S":'Southern',
+                    "WC":'Wan Chai',
+                    "KC":'Kowloon City',
+                    "J":'Kwun Tong',
+                    "SSP":'Sham Shui Po',
+                    "WTS":'Wong Tai Sin',
+                    "YTM":'Yau Tsim Mong',
+                    "IS":'Island',
+                    "KT":'Kwai Tsing',
+                    "N":'North',
+                    "SK":'Sai Kung',
+                    "ST":'Sha Tin',
+                    "TP":'Tai Po',
+                    "TW":'Tsuen Wan',
+                    "TM":'Tuen Mun',
+                    "YL":'Yuen Long'
+
+}
+```  
+2. pages/views.py  
+```
+from django.shortcuts import render
+from django.http import HttpResponse
+
+from listings.choices import price_choices , state_choices , bedroom_choices //加了
+
+from realtors.models import Realtor
+
+from listings.models import Listing
+
+# Create your views here.
+def index(request):
+    listings = Listing.objects.order_by(
+    '-list_date').filter(is_published=True)[:3]
+    context = {
+    'listings': listings,
+    'state_choices': state_choices, //加了
+    'price_choices': price_choices, //加了
+    "bedroom_choices": bedroom_choices //加了
+    }
+    return render(request,"pages/index.html",context)
+
+def about(request):
+    realtors = Realtor.objects.order_by('-hire_date')
+    mvp_realtor = Realtor.objects.all().filter(is_mvp=True)
+    context = {
+        'realtors': realtors,
+        'mvp_realtor': mvp_realtor,
+    }
+
+    return render(request,"pages/about.html",context)
+
+```
+
+3. templates/pages/index.html  
+```
+{% extends 'base.html' %} 
+
+{% load humanize %}
+
+{% block content %}
+  <!-- Showcase -->
+  <section id="showcase">
+    <div class="container text-center">
+      <div class="home-search p-5">
+        <div class="overlay p-5">
+          <h1 class="display-4 mb-4">
+            Property Searching Just Got So Easy
+          </h1>
+          <p class="lead">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Recusandae quas, asperiores eveniet vel nostrum magnam
+            voluptatum tempore! Consectetur, id commodi!</p>
+          <div class="search">
+            <form action="{% url 'search' %}">  //改了
+              <!-- Form Row 1 -->
+              <div class="form-row">
+                <div class="col-md-4 mb-3">
+                  <label class="sr-only">Keywords</label>
+                  <input type="text" name="keywords" class="form-control" placeholder="Keyword (Pool, Garage, etc)">
+                </div>
+
+                <div class="col-md-4 mb-3">
+                  <label class="sr-only">City</label>
+                  <input type="text" name="city" class="form-control" placeholder="City">
+                </div>
+
+                <div class="col-md-4 mb-3">
+                  <label class="sr-only">State</label>
+                  <select name="state" class="form-control">
+                    <option selected="true" disabled="disabled">State (All)</option>
+                    {% for key, value in state_choices.items %}  //加了
+                    <option value="{{key}}">{{value}}</option>   //加了
+                    {% endfor %}    //加了
+                  </select>
+                </div>
+              </div>
+              <!-- Form Row 2 -->
+              <div class="form-row">
+                <div class="col-md-6 mb-3">
+                  <label class="sr-only">Bedrooms</label>
+                  <select name="bedrooms" class="form-control">
+                    <option selected="true" disabled="disabled">Bedrooms (All)</option>
+                    {% for key, value in bedroom_choices.items %}   //加了
+                    <option value="{{key}}">{{value}}</option>   //加了
+                    {% endfor %}    //加了
+                  </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <select name="price" class="form-control" id="type">
+                    <option selected="true" disabled="disabled">Max Price (Any)</option>
+                    {% for key, value in price_choices.items %}  //加了
+                    <option value="{{key}}">{{value}}</option>   //加了
+                    {% endfor %}   //加了
+                  </select>
+                </div>
+              </div>
+              <button class="btn btn-secondary btn-block mt-4" type="submit">Submit form</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+....
+
+
+```
+
+---
