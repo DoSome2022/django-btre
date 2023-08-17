@@ -9,6 +9,7 @@ part7 - 729
 part8 - 1355  
 part9 - 1483  
 part10 - 1881  
+part11 - 1923  
 
 
 
@@ -1920,3 +1921,59 @@ urlpatterns = [
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) //增加
 ```
 ---
+## part11 - 1923  
+要做的事:
+- 增加 base html  
+- listings data 容入 listings html  
+
+---  
+#### 增加 base html  
+1. 在templates裹開一個admin的文件夾，裹面開base_site.html  
+
+templates/admin/base_site.html  
+```
+{% extends 'admin/base.html' %}
+{% load static %}
+
+
+{% block branding %}
+<h1 id="head">
+    <img src="{% static 'img/logo.png' %}" alt="BT Real Estate" height="50px" width="80px" class="brand_img">
+    Admin Area
+</h1>
+{% endblock branding %}
+
+
+{% block extrastyle %}
+<link rel="stylesheet" href="{% static 'css/admin.css' %}">
+{% endblock extrastyle %}
+```
+---
+#### listings data 容入 listings html  
+2. listings/views.py  
+```
+from django.shortcuts import render
+
+from .models import Listing  //增加
+# Create your views here.
+
+
+def index(request):
+    listings = Listing.objects.all()  //增加
+    context = {  //增加
+        'listings': listings  //增加
+    }  //增加
+
+    return render(request, 'listings/listings.html', context)  //增加context
+
+def listing(request):
+    return render(request,'listings/listing.html')
+
+def search(request):
+    return render(request, 'listings/search.html') 
+```
+
+2. templates/listings/listings.html
+```
+
+```
