@@ -11,6 +11,7 @@ part9 - 1483
 part10 - 1881  
 part11 - 1923  
 part12 - 2126  
+part13 - 12719  
 
 
 
@@ -12716,3 +12717,340 @@ def search(request):
 ```
 ---
 
+## part13 - 12719  
+要做的事:
+- 改良index.html 及 about.html
+
+---
+
+#### 改良index.html 及 about.html  
+
+1. pages/views.py
+```
+from django.shortcuts import render
+from django.http import HttpResponse
+from realtors.models import Realtor
+
+from listings.models import Listing //加了
+
+# Create your views here.
+def index(request):
+    listings = Listing.objects.order_by(   //加了
+    '-list_date').filter(is_published=True)[:3]  //加了
+    context = {  //加了
+    'listings': listings  //加了
+    }   //加了
+    return render(request,"pages/index.html",context)   //加了context
+
+def about(request):
+    realtors = Realtor.objects.order_by('-hire_date')
+    mvp_realtor = Realtor.objects.all().filter(is_mvp=True) //改了
+    context = {
+        'realtors': realtors,
+        'mvp_realtor': mvp_realtor,
+    }
+
+    return render(request,"pages/about.html",context)  //加了context
+```  
+
+2. templates/pages/index.html
+
+```
+{% extends 'base.html' %} 
+
+{% load humanize %}       //加了
+
+{% block content %}
+  <!-- Showcase -->
+  <section id="showcase">
+    <div class="container text-center">
+      <div class="home-search p-5">
+        <div class="overlay p-5">
+          <h1 class="display-4 mb-4">
+            Property Searching Just Got So Easy
+          </h1>
+          <p class="lead">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Recusandae quas, asperiores eveniet vel nostrum magnam
+            voluptatum tempore! Consectetur, id commodi!</p>
+          <div class="search">
+            <form action="search.html">
+              <!-- Form Row 1 -->
+              <div class="form-row">
+                <div class="col-md-4 mb-3">
+                  <label class="sr-only">Keywords</label>
+                  <input type="text" name="keywords" class="form-control" placeholder="Keyword (Pool, Garage, etc)">
+                </div>
+
+                <div class="col-md-4 mb-3">
+                  <label class="sr-only">City</label>
+                  <input type="text" name="city" class="form-control" placeholder="City">
+                </div>
+
+                <div class="col-md-4 mb-3">
+                  <label class="sr-only">State</label>
+                  <select name="state" class="form-control">
+                    <option selected="true" disabled="disabled">State (All)</option>
+                    <option value="A">Central and West</option>
+                    <option value="C">Eastern</option>
+                    <option value="D">Southern</option>
+                    <option value="B">Wan Chai</option>
+                    <option value="G">Kowloon City</option>
+                    <option value="J">Kwun Tong</option>
+                    <option value="F">Sham Shui Po</option>
+                    <option value="H">Wong Tai Sin</option>
+                    <option value="E">Yau Tsim Mong</option>
+                    <option value="T">Island</option>
+                    <option value="S">Kwai Tsing</option>
+                    <option value="N">North</option>
+                    <option value="Q">Sai Kung</option>
+                    <option value="R">Sha Tin</option>
+                    <option value="P">Tai Po</option>
+                    <option value="K">Tsuen Wan</option>
+                    <option value="L">Tuen Mun</option>
+                    <option value="M">Yuen Long</option>
+                  </select>
+                </div>
+              </div>
+              <!-- Form Row 2 -->
+              <div class="form-row">
+                <div class="col-md-6 mb-3">
+                  <label class="sr-only">Bedrooms</label>
+                  <select name="bedrooms" class="form-control">
+                    <option selected="true" disabled="disabled">Bedrooms (All)</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                  </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <select name="price" class="form-control" id="type">
+                    <option selected="true" disabled="disabled">Max Price (Any)</option>
+                    <option value="1000000">$1,000,000</option>
+                    <option value="2000000">$2,000,000</option>
+                    <option value="3000000">$3,000,000</option>
+                    <option value="4000000">$4,000,000</option>
+                    <option value="5000000">$5,000,000</option>
+                    <option value="6000000">$6,000,000</option>
+                    <option value="7000000">$7,000,000</option>
+                    <option value="8000000">$8,000,000</option>
+                    <option value="9000000">$9,000,000</option>
+                    <option value="10000000">$100M+</option>
+                  </select>
+                </div>
+              </div>
+              <button class="btn btn-secondary btn-block mt-4" type="submit">Submit form</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Listings -->
+  <section id="listings" class="py-5">
+    <div class="container">
+      <h3 class="text-center mb-3">Latest Listings</h3>
+      <div class="row">
+        <!-- Listing 1 -->
+        {% if listings %}{% for listing in listings %}     //加了
+        <div class="col-md-6 col-lg-4 mb-4">
+          <div class="card listing-preview">
+            <img class="card-img-top" src="{{ listing.photo_main.url }}" alt=""/>     //改了
+            <div class="card-img-overlay">
+              <h2>
+                <span class="badge badge-secondary text-white">${{listing.price | intcomma}}</span>      //改了
+              </h2>
+            </div>
+            <div class="card-body">
+              <div class="listing-heading text-center">
+                <h4 class="text-primary">{{ listing.title }}</h4>        //改了
+                <p>
+                  <i class="fas fa-map-marker text-secondary"></i> 
+                  {{listing.city}} {{listing.state}}, {{listing.zipcode}}         // //改了
+                </p>
+              </div>
+              <hr>
+              <div class="row py-2 text-secondary">
+                <div class="col-6">
+                  <i class="fas fa-th-large"></i> Sqft: {{ listing.sqft }}</div>         //改了
+                <div class="col-6">
+                  <i class="fas fa-car"></i> Garage: {{listing.garage}}</div>           //改了
+              </div>
+              <div class="row py-2 text-secondary">
+                <div class="col-6">
+                  <i class="fas fa-bed"></i> Bedrooms: {{listing.bedrooms}} </div>         //改了
+                <div class="col-6"> 
+                  <i class="fas fa-bath"></i> Bathrooms: {{listing.bathrooms}} </div>       //改了
+              </div>
+              <hr>
+              <div class="row py-2 text-secondary">
+                <div class="col-6">
+                  <i class="fas fa-user"></i> {{listing.realtor}}</div>      //改了
+              </div>
+              <div class="row text-secondary pb-2">
+                <div class="col-6">
+                  <i class="fas fa-clock"></i>
+                  {{listing.list_date | timesince}}         //改了
+                </div>
+              </div>
+              <hr>
+              <a href="listing.html" class="btn btn-primary btn-block">More Info</a>
+            </div>
+          </div>
+        </div>
+
+       
+{% endfor %}{% else %}          //加了
+<div class="col-md-12">          //加了
+  <p>No Listings Available</p>   //加了
+  </div>         //加了
+  {% endif %}    //加了
+  </div>     //加了
+  </div>    //加了
+  </section> //加了
+
+
+  <section id="services" class="py-5 bg-secondary text-white">
+    <div class="container">
+      <div class="row text-center">
+        <div class="col-md-4">
+          <i class="fas fa-comment fa-4x mr-4"></i>
+          <hr>
+          <h3>Consulting Services</h3>
+          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Incidunt, debitis nam! Repudiandae, provident iste consequatur
+            hic dignissimos ratione ea quae.</p>
+        </div>
+        <div class="col-md-4">
+          <i class="fas fa-home fa-4x mr-4"></i>
+          <hr>
+          <h3>Propery Management</h3>
+          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Incidunt, debitis nam! Repudiandae, provident iste consequatur
+            hic dignissimos ratione ea quae.</p>
+        </div>
+        <div class="col-md-4">
+          <i class="fas fa-suitcase fa-4x mr-4"></i>
+          <hr>
+          <h3>Renting & Selling</h3>
+          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Incidunt, debitis nam! Repudiandae, provident iste consequatur
+            hic dignissimos ratione ea quae.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+```
+
+3. templates/pages/about.html  
+```
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<section id="showcase-inner" class="py-5 text-white">   //加了
+    <div class="container">   //加了
+    <div class="row text-center">  //加了
+    <div class="col-md-12">  //加了
+    <h1 class="display-4">About BT Real Estate</h1>  //加了
+    <p class="lead">  //加了
+    Lorem ipsum dolor sit, amet consectetur adipisicing elit. Sunt,
+    pariatur!
+    </p>  //加了
+    </div>  //加了
+    </div>  //加了
+    </div>  //加了
+    </section>  //加了
+
+<!-- Breadcrumb -->
+<section id="bc" class="mt-3">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{% url 'index' %}">
+                        <i class="fas fa-home"></i> Home</a>
+                </li>
+                <li class="breadcrumb-item active"> About</li>
+            </ol>
+        </nav>
+    </div>
+</section>
+
+<section id="about" class="py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <h2>We Search For The Perfect Home</h2>
+                <p class="lead">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Sunt, pariatur!</p>
+                <img src="{% static 'img/about.jpg' %}" alt="">
+                <p class="mt-4">Lorem ipsum dolor sit amet consectetur adipisicing elit. Perspiciatis esse officia
+                    repudiandae ad saepe ex, amet
+                    neque quod accusamus rem quia magnam magni dolorum facilis ullam minima perferendis? Exercitationem
+                    at quaerat
+                    commodi id libero eveniet harum perferendis laborum molestias quia.</p>
+            </div>
+            <div class="col-md-4">
+                {% if mvp_realtor %}  //加了
+                <div class="card">
+                    {% for realtor in mvp_realtor %} //加了
+                    <img class="card-img-top" src="{{ realtor.photo.url }}" alt="Seller of the month"/> //改了realtor
+                    <div class="card-body">
+                        <h5 class="card-title">Seller Of The Month</h5>
+                        <h6 class="text-secondary">{{ realtor.name }}</h6>//改了realtor
+                        <p class="card-text">{{ realtor.description }}</p>//改了realtor
+
+                    </div>  
+                    {% endfor %} //加了
+                    </div>
+                </div>
+                {% endif %} //加了
+        </div>
+    </div>
+</section>
+
+<!-- Work -->
+<section id="work" class="bg-dark text-white text-center">
+    <h2 class="display-4">We Work For You</h2>
+    <h4>Lorem ipsum dolor sit amet consectetur adipisicing elit. Autem velit aperiam, unde aliquid at similique!</h4>
+    <hr>
+    <a href="{% url 'listings' %}" class="btn btn-secondary text-white btn-lg">View Our Featured Listings</a>
+</section>
+
+<!-- Team -->
+<section id="team" class="py-5">
+    <div class="container">
+        <h2 class="text-center">Our Team</h2>
+        <div class="row text-center">
+            {% if realtors %}  //加了
+            {% for realtor in realtors %} //加了
+            <div class="col-md-4">
+                <img src="{{ realtor.photo.url }}" alt="" class="rounded-circle mb-3">  //改了realtor
+                <h4>{{ realtor.name }}</h4> //改了realtor
+                <p class="text-success">
+                    <i class="fas fa-award text-success mb-3"></i> Realtor</p>
+                <hr>
+                <p>
+                    <i class="fas fa-phone"></i> {{ realtor.phone }}</p> //改了realtor
+                <p>
+                    <i class="fas fa-envelope-open"></i> {{ realtor.email }}</p> //改了realtor
+            </div>
+
+            {% endfor %}  //加了
+
+            {% else %}   //加了
+            <div class="col-md-12">   //加了
+                <p>No Realtors available</p>  //加了
+            </div>  //加了
+            {% endif %}  //加了
+        </div>
+    </div>
+</section>
+
+{% endblock content %}
+```
