@@ -16,6 +16,7 @@ part14 - 13057
 part15 - 13496  
 part16 - 13923  
 part17 - 13981  
+part18 - 14123  
 
 
 
@@ -14119,3 +14120,210 @@ Login</a
 ```
 
 ---
+
+## part18 - 14123  
+要做的事:
+- 建立login 頁面  
+- 建立register 頁面  
+- 建立dashboard 頁面
+- navbar bug
+
+--- 
+#### 建立頁面
+在templates文件夾，開個accounts文件夾,裹面開login.html , register.html 及 dashboard.html  
+
+1. templates/accounts/login.html  
+```
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section id="login" class="bg-light py-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6 mx-auto">
+          <div class="card">
+            <div class="card-header bg-primary text-white">
+              <h4>
+                <i class="fas fa-sign-in-alt"></i> Login</h4>
+            </div>
+            <div class="card-body">
+              <form action="index.html">
+                <div class="form-group">
+                  <label for="username">Username</label>
+                  <input type="text" name="username" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                  <label for="password2">Password</label>
+                  <input type="password" name="password" class="form-control" required>
+                </div>
+
+                <input type="submit" value="Login" class="btn btn-secondary btn-block">
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+
+{% endblock %}
+```
+
+2. templates/accounts/register.html  
+```
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section id="register" class="bg-light py-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6 mx-auto">
+          <div class="card">
+            <div class="card-header bg-primary text-white">
+              <h4>
+                <i class="fas fa-user-plus"></i> Register</h4>
+            </div>
+            <div class="card-body">
+                <form action="index.html">
+                  <div class="form-group">
+                  <label for="first_name">First Name</label>
+                  <input type="text" name="first_name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                  <label for="last_name">Last Name</label>
+                  <input type="text" name="last_name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                  <label for="username">Username</label>
+                  <input type="text" name="username" class="form-control" required>
+                </div>
+                <div class="form-group">
+                  <label for="email">Email</label>
+                  <input type="email" name="email" class="form-control" required>
+                </div>
+                <div class="form-group">
+                  <label for="password2">Password</label>
+                  <input type="password" name="password" class="form-control" required>
+                </div>
+                <div class="form-group">
+                  <label for="password">Confirm Password</label>
+                  <input type="password" name="password2" class="form-control" required>
+                </div>
+                <input type="submit" value="Register" class="btn btn-secondary btn-block">
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+{% endblock %}
+```
+
+3. templates/accounts/dashboard.html  
+```
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section id="showcase-inner" class="py-5 text-white">
+    <div class="container">
+      <div class="row text-center">
+        <div class="col-md-12">
+          <h1 class="display-4">User Dashboard</h1>
+          <p class="lead">Manage your BT Real Estate account</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Breadcrumb -->
+  <section id="bc" class="mt-3">
+    <div class="container">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a href="index.html">
+              <i class="fas fa-home"></i> Home</a>
+          </li>
+          <li class="breadcrumb-item active"> Dashboard</li>
+        </ol>
+      </nav>
+    </div>
+  </section>
+
+  <section id="dashboard" class="py-4">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <h2>Welcome John</h2>
+          <p>Here are the property listings that you have inquired about</p>
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Property</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>22</td>
+                <td>45 Drivewood Circle</td>
+                <td>
+                  <a class="btn btn-light" href="#">View Listing</a>
+                </td>
+              </tr>
+              <tr>
+                <td>43</td>
+                <td>22 Westbrook rd</td>
+                <td>
+                  <a class="btn btn-light" href="#">View Listing</a>
+                </td>
+              </tr>
+              <tr>
+                <td>31</td>
+                <td>12 Samson Ave</td>
+                <td>
+                  <a class="btn btn-light" href="#">View Listing</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+{% endblock %}
+```
+
+4. templates/partials/_navbav.html
+```
+...
+
+<a class="nav-link" href="{%url 'register'%}"> //改了 {%    %}
+<i class="fas fa-user-plus"></i> Register</a
+>
+</li>
+<li 
+{% if 'register' in request.path %}
+class="nav-item mr-3 active"
+{% else %}
+class="nav-item mr-3"
+{% endif %}
+>
+<a class="nav-link" href="{%url 'login'%}">  //改了 {%    %}
+<i class="fas fa-sign-in-alt"></i>
+Login</a
+>
+
+...
+```
