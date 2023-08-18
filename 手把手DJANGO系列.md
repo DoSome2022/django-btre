@@ -15,6 +15,7 @@ part13 - 12719
 part14 - 13057  
 part15 - 13496  
 part16 - 13923  
+part17 - 13981  
 
 
 
@@ -13976,4 +13977,145 @@ urlpatterns = [
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 ```
+---
+
+## part17 - 13981  
+要做的事: 
+- accounts/urls.py 設定  
+- accounts/views.py 設定  
+- navbar修改  
+
+---
+
+####  accounts/urls.py 設定  
+在accounts app裹開urls.py  
+1. accounts/urls.py  
+```
+from django.urls import path
+from . import views 
+
+urlpatterns = [
+    path('login', views.login , name="login"),
+    path('register',views.register, name="register"),
+    path('logout', views.logout, name="logout"),
+    path('dashboard', views.dashboard , name="dashboard")
+    
+]
+
+```
+#### accounts/views.py 設定  
+1. accounts/views.py  
+```
+from django.shortcuts import render , redirect
+
+# Create your views here.
+
+def register(request):
+    return render(request, 'accounts/register.html')
+
+def login(request):
+    return render(request, 'accounts/login.html')
+
+def logout(request):
+    return redirect('index')
+
+def dashboard(request):
+    return render(request, 'accounts/dashboard.html')
+```
+
+---
+
+###  navbar修改
+1. templates/partials/_navbar.html
+```
+{% load static %}
+{% comment %} {% endcomment %} //加了
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+<div class="container">
+<a class="navbar-brand" href="{% url 'index' %}">
+<!-- logo also need to update the assets folder -->
+<img src="{% static 'img/logo.png' %}" class="logo" alt="" />
+</a>
+<button
+class="navbar-toggler"
+type="button"
+data-toggle="collapse"
+data-target="#navbarNavAltMarkup"
+>
+<span class="navbar-toggler-icon"></span>
+</button>
+<div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+<ul class="navbar-nav">
+    <li {% if '/' == request.path %} //加了
+    
+    class="nav-item active mr-3" //加了
+    
+    {% else %} //加了
+    
+    class="nav-item mr-3" //加了
+    
+    {% endif %} //加了
+    
+    > //加了
+
+<li class="nav-item active mr-3">
+<a class="nav-link" href="{% url 'index' %}">Home</a>
+</li>
+
+<li {% if 'about' in request.path %} //加了
+class="nav-item active mr-3"  //加了
+{% else %}  //加了
+class="nav-item mr-3"
+{% endif %}  //加了
+>
+
+<li class="nav-item mr-3">
+<a class="nav-link" href="{% url 'about' %}">About</a>
+</li>
+
+<li {% if 'listings' in request.path %} //加了
+class="nav-item active mr-3"  //加了
+{% else %}  //加了
+class="nav-item mr-3"
+{% endif %}  //加了
+>  
+{% comment %}  //加了
+<!-- fixed the listing -->
+{% endcomment %}   //加了
+
+
+<li class="nav-item mr-3">
+<a class="nav-link" href="{% url 'listings' %}">Featured Listings</a>
+</li>
+</ul>
+<ul class="navbar-nav ml-auto">   
+<li {% if 'register' in request.path %}   //加了
+class="nav-item mr-3 active"   //加了
+{% else %}   //加了
+class="nav-item mr-3"
+{% endif %}  //加了
+>
+<a class="nav-link" href="{url 'register'}">  //改了
+<i class="fas fa-user-plus"></i> Register</a
+>
+</li>
+<li 
+{% if 'register' in request.path %}  //加了
+class="nav-item mr-3 active"  //加了
+{% else %}  //加了
+class="nav-item mr-3"
+{% endif %}  //加了
+>
+<a class="nav-link" href="{% url 'login' %}">  //改了
+<i class="fas fa-sign-in-alt"></i>
+Login</a
+>
+</li>
+</ul>
+</div>
+</div>
+</nav>
+```
+
 ---
