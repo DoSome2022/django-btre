@@ -14,6 +14,7 @@ part12 - 2126
 part13 - 12719  
 part14 - 13057  
 part15 - 13496  
+part16 - 13923  
 
 
 
@@ -13919,3 +13920,60 @@ Submit form
 </section>
 {% endblock %}
 ```
+
+## part16 - 13923  
+要做的事:  
+- 建立accounts app  
+- btre/settings.py 設定  及 urls.py 設定
+
+
+---
+
+#### 建立accounts app  
+
+1. 在終端機  
+```
+python manage.py startapp accounts
+```
+
+---
+
+#### btre/settings.py 設定  及 urls.py 設定
+
+1. btre/settings.py  
+```
+...
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'django.contrib.humanize',
+    'pages',
+    'realtors',
+    'listings',
+    'accounts', //增加
+]
+
+
+...
+```
+
+2. btre/urls.py
+```
+from django.contrib import admin
+from django.urls import path , include
+from django.conf import settings
+from django.conf.urls.static import static
+
+urlpatterns = [
+    path('', include('pages.urls')),
+    path('listings/',include('listings.urls')),
+    path('accounts/',include('accounts.urls')),
+    path('admin/', admin.site.urls), //加了
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+```
+---
