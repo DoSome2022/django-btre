@@ -17,7 +17,7 @@ part15 - 13496
 part16 - 13923  
 part17 - 13981  
 part18 - 14123  
-
+part19 - 14330  
 
 
 
@@ -14327,3 +14327,148 @@ Login</a
 
 ...
 ```
+## part19 - 14330  
+要做的事:
+- login.html 及 register.html 修改  
+- 建立alerts.html  
+- 建立 register forms  
+
+--- 
+
+#### login.html 及 register.html 修改  
+
+1. templates/accounts/login.html
+```
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section id="login" class="bg-light py-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6 mx-auto">
+          <div class="card">
+            <div class="card-header bg-primary text-white">
+              <h4>
+                <i class="fas fa-sign-in-alt"></i> Login</h4>
+            </div>
+            <div class="card-body">
+              {% include 'partials/_alerts.html' %} //加了
+              <form action="{% url 'login' %}" method="POST"> //改了
+                {% csrf_token %} //加了
+                <div class="form-group">
+                  <label for="username">Username</label>
+                  <input type="text" name="username" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                  <label for="password2">Password</label>
+                  <input type="password" name="password" class="form-control" required>
+                </div>
+
+                <input type="submit" value="Login" class="btn btn-secondary btn-block">
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+
+{% endblock %}
+```
+2. templates/accounts/register.html  
+```
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section id="register" class="bg-light py-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6 mx-auto">
+          <div class="card">
+            <div class="card-header bg-primary text-white">
+              <h4>
+                <i class="fas fa-user-plus"></i> Register</h4>
+            </div>
+            <div class="card-body">
+              {% include 'partials/_alerts.html' %} //加了
+                <form action="{% url 'register' %" method="POST"> //改了
+                  {% csrf_token %}  //加了
+                  <div class="form-group">
+                  <label for="first_name">First Name</label>
+                  <input type="text" name="first_name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                  <label for="last_name">Last Name</label>
+                  <input type="text" name="last_name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                  <label for="username">Username</label>
+                  <input type="text" name="username" class="form-control" required>
+                </div>
+                <div class="form-group">
+                  <label for="email">Email</label>
+                  <input type="email" name="email" class="form-control" required>
+                </div>
+                <div class="form-group">
+                  <label for="password2">Password</label>
+                  <input type="password" name="password" class="form-control" required>
+                </div>
+                <div class="form-group">
+                  <label for="password">Confirm Password</label>
+                  <input type="password" name="password2" class="form-control" required>
+                </div>
+                <input type="submit" value="Register" class="btn btn-secondary btn-block">
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+{% endblock %}
+
+```
+
+----
+
+#### 建立alerts.html
+在templates/partials裹，新建_alerts.html
+
+---
+
+####  建立 register forms  
+在accounts app 裹, 新建forms.py
+1. accounts/forms.py  
+```
+from django import forms
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+
+class RegisterForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = [ 
+            'first_name',
+            'email',
+            'username',
+            'password',
+            'password2' 
+            ]
+        labels = {
+            'first_name':'Name'
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(RegisterForm, self).__init__(*args, **kwargs)
+
+        for name , field in self.fields.items():
+            field.widget.attrs.update({'class':'input'})
+```
+---

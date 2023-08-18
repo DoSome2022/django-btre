@@ -1,4 +1,5 @@
 from django.shortcuts import render , redirect
+from django.contrib.auth import login , authenticate
 
 # Create your views here.
 
@@ -7,6 +8,8 @@ def register(request):
 
 def login(request):
     return render(request, 'accounts/login.html')
+
+
 
 def logout(request):
     return redirect('index')
