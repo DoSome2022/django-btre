@@ -15036,3 +15036,98 @@ urlpatterns = [
 {% block content %}
 ```
 ---
+
+## part23 - 15040
+要做的事:
+- 建立contacts app  
+- contacts models  
+- contacts admin  
+- contacts urls
+
+---
+#### 建立contacts app && contacts models && contacts admin && contacts urls
+1. 在終端機  
+```
+python manage.py startapp contacts
+```
+2. contacts/models.py
+```
+from django.db import models
+from django.utils import timezone
+
+
+class Contact(models.Model):
+    listing = models.CharField(max_length=200)
+    listing_id = models.IntegerField()
+    name = models.CharField(max_length=200)
+    email = models.CharField(max_length=100)
+    phone = models.CharField(max_length=100)
+    message = models.TextField(blank=True)
+    contact_date = models.DateTimeField(default=timezone.now, blank=True)
+    user_id = models.IntegerField(blank=True)
+
+    def __str__(self):
+        return self.name
+```
+3. contacts/admin.py
+```
+from django.contrib import admin
+from .models import Contact
+
+
+class ContactAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'listing', 'email', 'contact_date')
+    list_display_links = ('id', 'name')
+    search_fields = ('name', 'email', 'listing')
+    list_per_page = 25
+
+admin.site.register(Contact, ContactAdmin)
+```
+4. contacts/urls.py
+```
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path("contact/", views.contact, name="contact"),
+]
+```
+5. btre/settings.py  
+```
+...
+# Application definition
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'django.contrib.humanize',
+    'pages',
+    'realtors',
+    'listings',
+    'accounts',
+    'contacts' //加了
+]
+...
+
+```
+6. btre/urls.py
+```
+from django.contrib import admin
+from django.urls import path , include
+from django.conf import settings
+from django.conf.urls.static import static
+
+urlpatterns = [
+    path('', include('pages.urls')),
+    path('listings/',include('listings.urls')),
+    path('accounts/',include('accounts.urls')),
+    path('contacts/', include('contacts.urls')),//加了
+    path('admin/', admin.site.urls),
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+```
+---
