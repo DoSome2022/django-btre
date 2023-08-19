@@ -33,7 +33,9 @@ def loginUser(request):
     return render(request, 'accounts/login.html')
 
 
-def logout(request):
+def logoutUser(request):
+    logout(request)
+    messages.success(request, "you are now logging out !")
     return redirect('index')
 
 def dashboard(request):

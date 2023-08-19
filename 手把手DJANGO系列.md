@@ -20,6 +20,7 @@ part18 - 14123
 part19 - 14330  
 part20 - 14475  
 part21 - 14639  
+part22 - 14841  
 
 
 
@@ -14685,7 +14686,7 @@ setTimeout(function () {  //加了
 3. templates/pages/index.html
 ```
 ...
-  {% include 'partials/_alert.html' %}  //加了
+  {% include 'partials/_alerts.html' %}  //加了
   <!-- Listings -->
   <section id="listings" class="py-5">
     <div class="container">
@@ -14838,3 +14839,200 @@ Login</a
 
 
 ```
+## part22 - 14841
+要做的事:
+- logout 功能
+- pages/index.html bug 修改
+- lightbox
+
+---
+####  logout 功能 && pages/index.html bug 修改  
+
+1. templates/pages/index.html
+```
+ {% include 'partials/_alerts.html' %} //  _alert.html  改 _alerts.html 
+  <!-- Listings -->
+```
+
+2. accounts/views.py
+```
+from django.shortcuts import render , redirect
+from django.contrib.auth import login , authenticate , logout //加了logout
+from django.contrib import messages
+from .forms import RegisterForm
+
+# Create your views here.
+
+def register(request):
+    if request.method == 'POST':
+        print(request.POST)
+        form = RegisterForm(request.POST)
+        print(form)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('accounts/login')
+    else:
+        form = RegisterForm()
+    return render(request, 'accounts/register.html',{'form':form})
+
+
+def loginUser(request):
+    if request.method == "POST":
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request,username=username, password=password )
+
+        if user is not None:
+            login(request, user)
+            messages.success(request,'You are logging in !')
+            return redirect('dashboard')
+
+    return render(request, 'accounts/login.html')
+
+
+def logoutUser(request): //改了logoutUser
+    logout(request)  //加了
+    messages.success(request, "you are now logging out !") //加了
+    return redirect('index')
+
+def dashboard(request):
+    return render(request, 'accounts/dashboard.html')
+```
+3. accounts/urls.py
+```
+from django.urls import path
+from . import views 
+
+urlpatterns = [
+    path('login', views.loginUser , name="login"),
+    path('register',views.register, name="register"),
+    path('logout', views.logoutUser, name="logout"), //改了
+    path('dashboard', views.dashboard , name="dashboard")
+    
+]
+
+```
+---
+
+#### lightbox 
+1. templates/base.html
+```
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BT Real Estate {% block title %} {% endblock %}</title> //加了
+    <meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Font Awesome -->
+<link rel="stylesheet" href="{% static 'css/all.css' %}" />
+<!-- Bootstrap -->
+<link rel="stylesheet" href="{% static 'css/bootstrap.css' %}" />
+<!-- Custom -->
+<link rel="stylesheet" href="{% static 'css/style.css' %}" />
+<!-- Lightbox -->
+<link rel="stylesheet" href="{% static 'css/lightbox.min.css' %}" />  //加了
+</head>
+<body>
+
+      <!-- Top Bar -->
+  {% include 'partials/_topbar.html' %}
+  
+
+   <!-- Navbar -->
+  {% include 'partials/_navbar.html' %}
+
+    {% block content %}
+
+    {% endblock %}
+
+      <!-- Footer -->
+      {% include 'partials/_footer.html' %}
+
+  <script src="{% static 'js/jquery-3.3.1.min.js' %} "></script>
+  <script src="{% static 'js/bootstrap.bundle.min.js' %} "></script>
+  <script src="{% static 'js/lightbox.min.js' %} "></script>
+  <script src="{% static 'js/main.js' %} "></script> //加了
+</body>
+</html>
+
+```
+2. templates/pages/index.html
+```
+{% extends 'base.html' %} 
+
+{% load humanize %}
+
+{% block title %} | Welcome{% endblock %} //加了
+
+{% block content %}
+...
+```
+3. templates/pages/about.html
+```
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} | About {% endblock %} //加了
+
+{% block content %}
+...
+```
+4. templates/listings/listing.html
+```
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} | |{{ listing.title }} {% endblock %} //加了
+
+{% block content %}
+```
+5. templates/listings/listings.html
+```
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} | Browse Property Listings {% endblock %} //加了
+
+{% block content %}
+```
+6. templates/listings/search.html
+```
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} | Search Results {% endblock %} //加了
+
+{% block content %}
+```
+7. templates/accounts/login.html
+```
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} | Login {% endblock %} //加了
+
+{% block content %}
+```
+8. templates/accounts/register.html
+```
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} | Register {% endblock %} //加了
+
+{% block content %}
+```
+9. templates/accounts/dashboard.html
+```
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} | Dashboard {% endblock %} //加了
+
+{% block content %}
+```
+---
