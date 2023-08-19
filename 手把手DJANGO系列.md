@@ -19,6 +19,7 @@ part17 - 13981
 part18 - 14123  
 part19 - 14330  
 part20 - 14475  
+part21 - 14639  
 
 
 
@@ -14631,6 +14632,209 @@ def loginUser(request):
 
 
 ...
+
+
+```
+---
+
+## part21 - 14639  
+要做的事:
+- 加alerts && 測試alerts  
+- navbar修改
+
+---
+
+####  加alert && 測試alert
+
+1. templates/partials/_alerts.html  
+```
+{% if messages %}
+<!-- pass in messages object for looping-->
+{% for message in messages %}
+<div id="message" class="container">
+<!-- bootstrap, replace bootstrp property by variable -->
+<!-- <div class="alert alert-danger"></div>
+-->
+<div
+,
+class="alert alert-{{ message.tags }} alert-dismissible text-center"
+,
+role="alert"
+, >
+<button type="button" class="close" data-dismiss="alert">
+<span aria-hidden="true">&times;</span>
+</button>
+<strong>
+{% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %} Error : {% else %}
+{{ message.tags | title }} {% endif %}
+</strong>
+{{ message }}
+</div>
+</div>
+{% endfor %} {% endif %}
+```  
+2. btre/static/js/main.js
+```
+const date = new Date();
+document.querySelector('.year').innerHTML = date.getFullYear();
+
+setTimeout(function () {  //加了
+    $('#message').fadeOut('slow');  //加了
+}, 5000)  //加了
+```
+3. templates/pages/index.html
+```
+...
+  {% include 'partials/_alert.html' %}  //加了
+  <!-- Listings -->
+  <section id="listings" class="py-5">
+    <div class="container">
+      <h3 class="text-center mb-3">Latest Listings</h3>
+      <div class="row">
+        <!-- Listing 1 -->
+        {% if listings %}{% for listing in listings %}
+        <div class="col-md-6 col-lg-4 mb-4">
+          <div class="card listing-preview">
+            <img class="card-img-top" src="{{ listing.photo_main.url }}" alt=""/>
+            <div class="card-img-overlay">
+
+...
+```
+4. templates/accounts/dashboard.html
+```
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section id="showcase-inner" class="py-5 text-white">
+    <div class="container">
+      <div class="row text-center">
+        <div class="col-md-12">
+          <h1 class="display-4">User Dashboard</h1>
+          <p class="lead">Manage your BT Real Estate account</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Breadcrumb -->
+  <section id="bc" class="mt-3">
+    <div class="container">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a href="{% url 'index' %}">  //改了
+              <i class="fas fa-home"></i> Home</a>
+          </li>
+          <li class="breadcrumb-item active"> Dashboard</li>
+        </ol>
+      </nav>
+    </div>
+  </section>
+  {% include 'partials/_alerts.html' %}  //加了
+  <section id="dashboard" class="py-4">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <h2>Welcome John</h2>
+          <p>Here are the property listings that you have inquired about</p>
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Property</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>22</td>
+                <td>45 Drivewood Circle</td>
+                <td>
+                  <a class="btn btn-light" href="#">View Listing</a>
+                </td>
+              </tr>
+              <tr>
+                <td>43</td>
+                <td>22 Westbrook rd</td>
+                <td>
+                  <a class="btn btn-light" href="#">View Listing</a>
+                </td>
+              </tr>
+              <tr>
+                <td>31</td>
+                <td>12 Samson Ave</td>
+                <td>
+                  <a class="btn btn-light" href="#">View Listing</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+{% endblock %}
+
+```
+
+5. templates/partials/_navbar.html
+```
+...
+
+
+
+{% comment %}
+<!-- fixed the listing -->
+{% endcomment %}
+
+
+<li class="nav-item mr-3">
+<a class="nav-link" href="{% url 'listings' %}">Featured Listings</a>
+</li>
+</ul>
+
+<ul class="navbar-nav ml-auto">  //加了
+    {% if request.user.is_authenticated %}  //加了
+    <li class="nav-item {% if 'dashboard' in request.path %}active{% endif %} mr-3">  //加了
+        <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>  //加了
+    </li>  //加了
+    <li class="nav-item mr-3">  //加了
+        <a class="nav-link" href="{% url 'logout' %}">  //加了
+            <i class="fas fa-sign-out-alt"></i>  //加了
+            Logout</a>  //加了
+    </li>  //加了
+    {% else %}  //加了
+
+
+<ul class="navbar-nav ml-auto">
+<li {% if 'register' in request.path %}
+class="nav-item mr-3 active"
+{% else %}
+class="nav-item mr-3"
+{% endif %}>
+<a class="nav-link" href="{%url 'register'%}">
+<i class="fas fa-user-plus"></i> Register</a
+>
+</li>
+<li 
+{% if 'register' in request.path %}
+class="nav-item mr-3 active"
+{% else %}
+class="nav-item mr-3"
+{% endif %}
+>
+<a class="nav-link" href="{%url 'login'%}">
+<i class="fas fa-sign-in-alt"></i>
+Login</a
+>
+</li>
+{% endif %}
+</ul>
+</div>
+</div>
+</nav>
 
 
 ```
