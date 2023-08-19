@@ -18,6 +18,7 @@ part16 - 13923
 part17 - 13981  
 part18 - 14123  
 part19 - 14330  
+part20 - 14475  
 
 
 
@@ -14416,11 +14417,11 @@ Login</a
                   <input type="email" name="email" class="form-control" required>
                 </div>
                 <div class="form-group">
-                  <label for="password2">Password</label>
-                  <input type="password" name="password" class="form-control" required>
+                  <label for="password1">Password</label> //改了for="password1"
+                  <input type="password" name="password1" class="form-control" required> //改了name="password1"
                 </div>
                 <div class="form-group">
-                  <label for="password">Confirm Password</label>
+                  <label for="password2">Confirm Password</label> //改了for="password2
                   <input type="password" name="password2" class="form-control" required>
                 </div>
                 <input type="submit" value="Register" class="btn btn-secondary btn-block">
@@ -14472,3 +14473,164 @@ class RegisterForm(UserCreationForm):
             field.widget.attrs.update({'class':'input'})
 ```
 ---
+#### part20 - 14475
+要做的事:
+- register 功能  &&  login 功能  && logout 功能
+
+---
+
+#### register功能  &&  login 功能  
+
+1. accounts/views.py  
+```
+from django.shortcuts import render , redirect
+from django.contrib.auth import login , authenticate   //加了
+from django.contrib import messages //加了
+from .forms import RegisterForm //加了
+
+
+def register(request):
+    if request.method == 'POST': //加了
+        form = RegisterForm(request.POST)  //加了
+        if form.is_valid():  //加了
+            login(request, user)  //加了
+            return redirect('/')  //加了
+    else:   //加了
+        form = RegisterForm()   //加了
+    return render(request, 'accounts/register.html')
+
+
+...
+
+
+```
+
+2. accounts/forms.py  
+```
+from django import forms
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+
+class RegisterForm(UserCreationForm):
+    first_name = forms.CharField(max_length=50,required=True) //加了
+    last_name = forms.CharField(max_length=50,required=True) //加了
+
+    email = forms.EmailField(max_length=50,required=True)  //加了
+
+                <div class="form-group">
+                  <label for="password">Password</label>
+                  <input type="password" name="password" class="form-control" required>
+                </div>
+
+                <input type="submit" value="Login" class="btn btn-secondary btn-block">
+              </form>
+              {% if form.errors %}
+              {% for field in form %}
+                  {% for error in field.errors %}
+                      <div class="p-6 bg-red-200 text-red-800 rounded-xl">
+                          <p>{{ error|escape }}</p>
+                      </div>
+                  {% endfor %}
+              {% endfor %}
+
+              {% for error in form.non_field_errors %}
+                  <div class="p-6 bg-red-200 text-red-800 rounded-xl">
+                      <p>{{ error|escape }}</p>
+                  </div>
+              {% endfor %}
+          {% endif %}
+
+
+    class Meta:
+            model = User
+            fields = ['first_name','last_name','username','email','password1', 'password2',]
+
+```
+
+3. templates/accounts/register.html 
+```
+...
+
+                <div class="form-group">
+                  <label for="password1">Password</label>   //改了for="password1"
+                  <input type="password" name="password1" class="form-control" > //改了name="password1"
+                </div>
+                <div class="form-group">
+                  <label for="password2">Confirm Password</label>//改了for="password2"
+                  <input type="password" name="password2" class="form-control"> //改了name="password2"
+                  </div>
+  <input type="submit" value="Register" class="btn btn-secondary btn-block">
+              </form>
+
+              {% if form.errors %}   //加了
+              {% for field in form %}   //加了
+                  {% for error in field.errors %}   //加了
+                      <div class="p-6 bg-red-200 text-red-800 rounded-xl">   //加了
+                          <p>{{ error|escape }}</p>   //加了
+                      </div>   //加了
+                  {% endfor %}   //加了
+              {% endfor %}   //加了
+
+              {% for error in form.non_field_errors %}   //加了
+                  <div class="p-6 bg-red-200 text-red-800 rounded-xl">   //加了
+                      <p>{{ error|escape }}</p>   //加了
+                  </div>   //加了
+              {% endfor %}   //加了
+          {% endif %}   //加了
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+{% endblock %}
+```
+4. templates/accounts/login.html  
+```
+...
+
+
+                <div class="form-group">
+                  <label for="password">Password</label>   //改了 for="password"
+                  <input type="password" name="password" class="form-control" required>
+                </div>
+
+                <input type="submit" value="Login" class="btn btn-secondary btn-block">
+              </form>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+
+{% endblock %}
+```
+
+5. accounts/views.py
+```
+...
+
+def loginUser(request):
+    if request.method == "POST":
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request,username=username, password=password )
+
+        if user is not None:
+            login(request, user)
+            messages.success(request,'You are logging in !')
+            return redirect('dashboard')
+
+    return render(request, 'accounts/login.html')
+
+
+...
+
+
+```
